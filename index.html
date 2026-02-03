@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Sanctification">
+    <meta name="theme-color" content="#4F46E5">
+    <title>Path to Sanctification - Catholic Spiritual Tracker</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%234F46E5' width='100' height='100'/><text y='70' font-size='70' fill='white' text-anchor='middle' x='50'>✝</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%234F46E5' width='100' height='100'/><text y='70' font-size='70' fill='white' text-anchor='middle' x='50'>✝</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .confession-item { 
+            transition: all 0.2s;
+        }
+        .confession-item:hover {
+            background-color: #f3f4f6;
+        }
+        
+        /* Mobile optimizations */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        input[type="checkbox"] {
+            min-width: 20px;
+            min-height: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .tab-btn {
+                font-size: 0.875rem;
+                padding: 1rem 0.75rem;
+            }
+        }
+        
+        /* Better touch targets */
+        label {
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Safe area for iPhone notch */
+        body {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h1 class="text-3xl font-bold text-indigo-900 text-center mb-2">✝ Path to Sanctification</h1>
+            <p class="text-center text-gray-600">Your Journey from Sinner to Saint</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="bg-white rounded-lg shadow-lg mb-6">
+            <div class="flex flex-wrap border-b border-gray-200">
+                <button onclick="switchTab('daily')" class="tab-btn px-6 py-4 font-semibold text-gray-700 border-b-2 border-indigo-600">
+                    Daily Activities
+                </button>
+                <button onclick="switchTab('readings')" class="tab-btn px-6 py-4 font-semibold text-gray-500 hover:text-gray-700 border-b-2 border-transparent">
+                    Daily Readings
+                </button>
+                <button onclick="switchTab('confession')" class="tab-btn px-6 py-4 font-semibold text-gray-500 hover:text-gray-700 border-b-2 border-transparent">
+                    Confession
+                </button>
+                <button onclick="switchTab('mercy')" class="tab-btn px-6 py-4 font-semibold text-gray-500 hover:text-gray-700 border-b-2 border-transparent">
+                    Works of Mercy
+                </button>
+                <button onclick="switchTab('history')" class="tab-btn px-6 py-4 font-semibold text-gray-500 hover:text-gray-700 border-b-2 border-transparent">
+                    History
+                </button>
+                <button onclick="switchTab('progress')" class="tab-btn px-6 py-4 font-semibold text-gray-500 hover:text-gray-700 border-b-2 border-transparent">
+                    Progress
+                </button>
+            </div>
+
+            <!-- Daily Activities Tab -->
+            <div id="daily-tab" class="tab-content active p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Today's Spiritual Activities</h2>
+                <p class="text-sm text-gray-500 mb-6" id="today-date"></p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-gradient-to-r from-rose-50 to-pink-50 p-4 rounded-lg border border-rose-200">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="w-5 h-5 text-rose-600 rounded" onchange="saveDailyActivity('rosary')">
+                            <span class="font-semibold text-gray-700">🌹 Holy Rosary</span>
+                        </label>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-amber-50 to-yellow-50 p-4 rounded-lg border border-amber-200">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="w-5 h-5 text-amber-600 rounded" onchange="saveDailyActivity('mass')">
+                            <span class="font-semibold text-gray-700">⛪ Holy Mass</span>
+                        </label>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-lg border border-blue-200">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="w-5 h-5 text-blue-600 rounded" onchange="saveDailyActivity('bible')">
+                            <span class="font-semibold text-gray-700">📖 Bible Reading</span>
+                        </label>
+                        <input type="number" min="0" placeholder="Minutes" 
+                               class="mt-2 w-full px-3 py-2 border border-blue-300 rounded-md text-sm"
+                               onchange="saveDailyActivityMinutes('bible', this.value)">
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-purple-50 to-violet-50 p-4 rounded-lg border border-purple-200">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="w-5 h-5 text-purple-600 rounded" onchange="saveDailyActivity('adoration')">
+                            <span class="font-semibold text-gray-700">🕯️ Eucharistic Adoration</span>
+                        </label>
+                        <input type="number" min="0" placeholder="Minutes" 
+                               class="mt-2 w-full px-3 py-2 border border-purple-300 rounded-md text-sm"
+                               onchange="saveDailyActivityMinutes('adoration', this.value)">
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border border-green-200">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="w-5 h-5 text-green-600 rounded" onchange="saveDailyActivity('divine-office')">
+                            <span class="font-semibold text-gray-700">📿 Divine Office/Liturgy of Hours</span>
+                        </label>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-indigo-50 to-blue-50 p-4 rounded-lg border border-indigo-200">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="w-5 h-5 text-indigo-600 rounded" onchange="saveDailyActivity('divine-mercy')">
+                            <span class="font-semibold text-gray-700">🙏 Divine Mercy Chaplet</span>
+                        </label>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-orange-50 to-red-50 p-4 rounded-lg border border-orange-200">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="w-5 h-5 text-orange-600 rounded" onchange="saveDailyActivity('spiritual-reading')">
+                            <span class="font-semibold text-gray-700">📚 Spiritual Reading</span>
+                        </label>
+                        <input type="number" min="0" placeholder="Minutes" 
+                               class="mt-2 w-full px-3 py-2 border border-orange-300 rounded-md text-sm"
+                               onchange="saveDailyActivityMinutes('spiritual-reading', this.value)">
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-teal-50 to-cyan-50 p-4 rounded-lg border border-teal-200">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="w-5 h-5 text-teal-600 rounded" onchange="saveDailyActivity('meditation')">
+                            <span class="font-semibold text-gray-700">🧘 Mental Prayer/Meditation</span>
+                        </label>
+                        <input type="number" min="0" placeholder="Minutes" 
+                               class="mt-2 w-full px-3 py-2 border border-teal-300 rounded-md text-sm"
+                               onchange="saveDailyActivityMinutes('meditation', this.value)">
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-lg border border-gray-200">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="w-5 h-5 text-gray-600 rounded" onchange="saveDailyActivity('fasting')">
+                            <span class="font-semibold text-gray-700">🍞 Fasting/Abstinence</span>
+                        </label>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-pink-50 to-rose-50 p-4 rounded-lg border border-pink-200">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="w-5 h-5 text-pink-600 rounded" onchange="saveDailyActivity('examination')">
+                            <span class="font-semibold text-gray-700">🔍 Examination of Conscience</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-blue-900 mb-2">Notes for Today</h3>
+                    <textarea id="daily-notes" rows="3" 
+                              class="w-full px-3 py-2 border border-blue-300 rounded-md"
+                              placeholder="Spiritual insights, graces received, challenges encountered..."
+                              onchange="saveDailyNotes()"></textarea>
+                </div>
+            </div>
+
+            <!-- Daily Readings Tab -->
+            <div id="readings-tab" class="tab-content p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Today's Mass Readings</h2>
+                <p class="text-sm text-gray-500 mb-6" id="readings-date"></p>
+                
+                <div id="readings-loading" class="text-center py-8">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                    <p class="text-gray-600 mt-4">Loading today's readings...</p>
+                </div>
+                
+                <div id="readings-error" style="display: none;" class="bg-red-50 border border-red-200 rounded-lg p-6">
+                    <p class="text-red-800 font-semibold">Unable to load readings</p>
+                    <p class="text-red-600 text-sm mt-2">Please check your internet connection or visit <a href="https://bible.usccb.org/daily-bible-reading" class="underline" target="_blank">USCCB Daily Readings</a></p>
+                </div>
+                
+                <div id="readings-content" style="display: none;" class="space-y-6">
+                    <!-- Will be populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Confession Tab -->
+            <div id="confession-tab" class="tab-content p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Sacrament of Reconciliation</h2>
+                
+                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
+                    <p class="text-sm text-purple-900 mb-2">
+                        <strong>Last Confession:</strong> <span id="last-confession-date">Never recorded</span>
+                    </p>
+                    <button onclick="recordNewConfession()" 
+                            class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition">
+                        Record New Confession
+                    </button>
+                </div>
+
+                <div id="confession-form" style="display: none;" class="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Examination of Conscience</h3>
+                    
+                    <!-- Sins Against God (1st, 2nd, 3rd Commandments) -->
+                    <div class="mb-6">
+                        <h4 class="font-bold text-gray-700 mb-3 text-lg border-b pb-2">Sins Against God</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="idolatry">
+                                <span class="text-sm"><strong>Idolatry</strong> - Placing other things before God (money, success, pleasure)</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="superstition">
+                                <span class="text-sm"><strong>Superstition</strong> - Fortune telling, horoscopes, occult practices</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="blasphemy">
+                                <span class="text-sm"><strong>Blasphemy</strong> - Speaking against God, sacred things, or the Church</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="taking-lords-name">
+                                <span class="text-sm"><strong>Taking the Lord's Name in Vain</strong> - Misusing God's name</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="missing-mass">
+                                <span class="text-sm"><strong>Missing Mass</strong> - Deliberately missing Sunday/Holy Day Mass without serious reason</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="unnecessary-work-sunday">
+                                <span class="text-sm"><strong>Unnecessary Work on Sunday</strong> - Not keeping the Lord's Day holy</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Sins Against Neighbor (4th-10th Commandments) -->
+                    <div class="mb-6">
+                        <h4 class="font-bold text-gray-700 mb-3 text-lg border-b pb-2">Sins Against Neighbor</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="disobedience-parents">
+                                <span class="text-sm"><strong>Disobedience to Parents/Authority</strong> - Disrespecting legitimate authority</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="hatred">
+                                <span class="text-sm"><strong>Hatred/Resentment</strong> - Harboring ill will toward others</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="anger">
+                                <span class="text-sm"><strong>Anger/Wrath</strong> - Uncontrolled anger, seeking revenge</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="violence">
+                                <span class="text-sm"><strong>Violence</strong> - Physical harm to others</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="abortion">
+                                <span class="text-sm"><strong>Abortion/Cooperation in Abortion</strong> - Direct or indirect participation</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="scandal">
+                                <span class="text-sm"><strong>Scandal</strong> - Leading others into sin by word or example</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="lying">
+                                <span class="text-sm"><strong>Lying</strong> - Deliberate falsehood</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="calumny">
+                                <span class="text-sm"><strong>Calumny/Slander</strong> - False statements harming another's reputation</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="detraction">
+                                <span class="text-sm"><strong>Detraction</strong> - Revealing another's faults without valid reason</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="gossip">
+                                <span class="text-sm"><strong>Gossip</strong> - Idle talk about others</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="stealing">
+                                <span class="text-sm"><strong>Stealing</strong> - Taking what belongs to another</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="cheating">
+                                <span class="text-sm"><strong>Cheating</strong> - Dishonesty in business, school, or other dealings</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="damaging-property">
+                                <span class="text-sm"><strong>Damaging Property</strong> - Vandalism or destruction of others' goods</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Sins Against Oneself and Purity -->
+                    <div class="mb-6">
+                        <h4 class="font-bold text-gray-700 mb-3 text-lg border-b pb-2">Sins Against Purity and Self</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="fornication">
+                                <span class="text-sm"><strong>Fornication</strong> - Sexual relations outside of marriage</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="adultery">
+                                <span class="text-sm"><strong>Adultery</strong> - Infidelity in marriage</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="masturbation">
+                                <span class="text-sm"><strong>Masturbation</strong> - Self-abuse</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="pornography">
+                                <span class="text-sm"><strong>Pornography</strong> - Viewing, distributing, or creating impure images</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="impure-thoughts">
+                                <span class="text-sm"><strong>Impure Thoughts</strong> - Deliberately entertaining lustful thoughts</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="contraception">
+                                <span class="text-sm"><strong>Contraception</strong> - Artificial prevention of conception</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="immodesty">
+                                <span class="text-sm"><strong>Immodesty</strong> - Dressing or acting in ways that provoke lust</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="drunkenness">
+                                <span class="text-sm"><strong>Drunkenness</strong> - Excessive consumption of alcohol</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="drug-abuse">
+                                <span class="text-sm"><strong>Drug Abuse</strong> - Illicit drug use or misuse of prescription drugs</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="gluttony">
+                                <span class="text-sm"><strong>Gluttony</strong> - Overindulgence in food or drink</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Capital Sins / Vice -->
+                    <div class="mb-6">
+                        <h4 class="font-bold text-gray-700 mb-3 text-lg border-b pb-2">Capital Sins</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="pride">
+                                <span class="text-sm"><strong>Pride</strong> - Excessive love of self, arrogance</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="greed">
+                                <span class="text-sm"><strong>Greed/Avarice</strong> - Excessive desire for wealth or possessions</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="envy">
+                                <span class="text-sm"><strong>Envy</strong> - Sadness at another's good fortune</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="sloth">
+                                <span class="text-sm"><strong>Sloth</strong> - Spiritual laziness, neglect of duties</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Other Grave Matters -->
+                    <div class="mb-6">
+                        <h4 class="font-bold text-gray-700 mb-3 text-lg border-b pb-2">Other Grave Matters</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="sacrilege">
+                                <span class="text-sm"><strong>Sacrilege</strong> - Profaning sacred persons, places, or things</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="receiving-unworthily">
+                                <span class="text-sm"><strong>Receiving Communion Unworthily</strong> - Receiving in state of mortal sin</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="despair">
+                                <span class="text-sm"><strong>Despair</strong> - Loss of hope in God's mercy</span>
+                            </label>
+                            <label class="flex items-start space-x-3 confession-item p-2 rounded">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-red-600 rounded" data-sin="presumption">
+                                <span class="text-sm"><strong>Presumption</strong> - Expecting salvation without conversion or effort</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Additional Notes (Optional)</label>
+                        <textarea id="confession-notes" rows="3" 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md"
+                                  placeholder="Any other sins or spiritual insights..."></textarea>
+                    </div>
+
+                    <div class="mt-6 flex space-x-4">
+                        <button onclick="saveConfession()" 
+                                class="bg-green-600 text-white px-6 py-3 rounded-md hover:bg-green-700 transition font-semibold">
+                            Save Confession Record
+                        </button>
+                        <button onclick="cancelConfession()" 
+                                class="bg-gray-400 text-white px-6 py-3 rounded-md hover:bg-gray-500 transition">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Confession History -->
+                <div id="confession-history" class="mt-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">Confession History</h3>
+                    <div id="confession-list" class="space-y-3">
+                        <!-- Will be populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Works of Mercy Tab -->
+            <div id="mercy-tab" class="tab-content p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Works of Mercy</h2>
+                
+                <!-- Corporal Works -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold text-orange-800 mb-4 border-b-2 border-orange-300 pb-2">
+                        Corporal Works of Mercy
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                            <label class="flex items-start space-x-3">
+                                <input type="checkbox" class="mt-1 w-5 h-5 text-orange-600 rounded" onchange="saveWorkOfMercy('feed-hungry')">
+                                <div>
+                                    <span class="font-semibold text-gray-800 block">Feed the Hungry</span>
+                                    <span class="text-sm text-gray-600">Provide food to those in need</span>
+                                </div>
+                            </label>
+                            <textarea placeholder="Details (optional)" rows="2" 
+                                      class="w-full mt-2 px-3 py-2 border border-orange-300 rounded-md text-sm"
+                                      onchange="saveWorkOfMercyNotes('feed-hungry', this.value)"></textarea>
+                        </div>
+
+                        <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                            <label class="flex items-start space-x-3">
+                                <input type="checkbox" class="mt-1 w-5 h-5 text-orange-600 rounded" onchange="saveWorkOfMercy('give-drink')">
+                                <div>
+                                    <span class="font-semibold text-gray-800 block">Give Drink to the Thirsty</span>
+                                    <span class="text-sm text-gray-600">Provide water or refreshment</span>
+                                </div>
+                            </label>
+                            <textarea placeholder="Details (optional)" rows="2" 
+                                      class="w-full mt-2 px-3 py-2 border border-orange-300 rounded-md text-sm"
+                                      onchange="saveWorkOfMercyNotes('give-drink', this.value)"></textarea>
+                        </div>
+
+                        <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                            <label class="flex items-start space-x-3">
+                                <input type="checkbox" class="mt-1 w-5 h-5 text-orange-600 rounded" onchange="saveWorkOfMercy('clothe-naked')">
+                                <div>
+                                    <span class="font-semibold text-gray-800 block">Clothe the Naked</span>
+                                    <span class="text-sm text-gray-600">Donate clothing or help those without</span>
+                                </div>
+                            </label>
+                            <textarea placeholder="Details (optional)" rows="2" 
+                                      class="w-full mt-2 px-3 py-2 border border-orange-300 rounded-md text-sm"
+                                      onchange="saveWorkOfMercyNotes('clothe-naked', this.value)"></textarea>
+                        </div>
+
+                        <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                            <label class="flex items-start space-x-3">
+                                <input type="checkbox" class="mt-1 w-5 h-5 text-orange-600 rounded" onchange="saveWorkOfMercy('shelter-homeless')">
+                                <div>
+                                    <span class="font-semibold text-gray-800 block">Shelter the Homeless</span>
+                                    <span class="text-sm text-gray-600">Provide housing or support shelters</span>
+                                </div>
+                            </label>
+                            <textarea placeholder="Details (optional)" rows="2" 
+                                      class="w-full mt-2 px-3 py-2 border border-orange-300 rounded-md text-sm"
+                                      onchange="saveWorkOfMercyNotes('shelter-homeless', this.value)"></textarea>
+                        </div>
+
+                        <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                            <label class="flex items-start space-x-3">
+                                <input type="checkbox" class="mt-1 w-5 h-5 text-orange-600 rounded" onchange="saveWorkOfMercy('visit-sick')">
+                                <div>
+                                    <span class="font-semibold text-gray-800 block">Visit the Sick</span>
+                                    <span class="text-sm text-gray-600">Care for the ill and infirm</span>
+                                </div>
+                            </label>
+                            <textarea placeholder="Details (optional)" rows="2" 
+                                      class="w-full mt-2 px-3 py-2 border border-orange-300 rounded-md text-sm"
+                                      onchange="saveWorkOfMercyNotes('visit-sick', this.value)"></textarea>
+                        </div>
+
+                        <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                            <label class="flex items-start space-x-3">
+                                <input type="checkbox" class="mt-1 w-5 h-5 text-orange-600 rounded" onchange="saveWorkOfMercy('visit-imprisoned')">
+                                <div>
+                                    <span class="font-semibold text-gray-800 block">Visit the Imprisoned</span>
+                                    <span class="text-sm text-gray-600">Minister to those in prison</span>
+                                </div>
+                            </label>
+                            <textarea placeholder="Details (optional)" rows="2" 
+                                      class="w-full mt-2 px-3 py-2 border border-orange-300 rounded-md text-sm"
+                                      onchange="saveWorkOfMercyNotes('visit-imprisoned', this.value)"></textarea>
+                        </div>
+
+                        <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                            <label class="flex items-start space-x-3">
+                                <input type="checkbox" class="mt-1 w-5 h-5 text-orange-600 rounded" onchange="saveWorkOfMercy('bury-dead')">
+                                <div>
+                                    <span class="font-semibold text-gray-800 block">Bury the Dead</span>
+                                    <span class="text-sm text-gray-600">Honor the deceased, attend funerals</span>
+                                </div>
+                            </label>
+                            <textarea placeholder="Details (optional)" rows="2" 
+                                      class="w-full mt-2 px-3 py-2 border border-orange-300 rounded-md text-sm"
+                                      onchange="saveWorkOfMercyNotes('bury-dead', this.value)"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spiritual Works -->
+                <div>
+                    <h3 class="text-xl font-semibold text-blue-800 mb-4 border-b-2 border-blue-300 pb-2">
+                        Spiritual Works of Mercy
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <label class="flex items-start space-x-3">
+                                <input type="checkbox" class="mt-1 w-5 h-5 text-blue-600 rounded" onchange="saveWorkOfMercy('instruct-ignorant')">
+                                <div>
+                                    <span class="font-semibold text-gray-800 block">Instruct the Ignorant</span>
+                                    <span class="text-sm text-gray-600">Share knowledge of the faith</span>
+                                </div>
+                            </label>
+                            <textarea placeholder="Details (optional)" rows="2" 
+                                      class="w-full mt-2 px-3 py-2 border border-blue-300 rounded-md text-sm"
+                                      onchange="saveWorkOfMercyNotes('instruct-ignorant', this.value)"></textarea>
+                        </div>
+
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <label class="flex items-start space-x-3">
+                                <input type="checkbox" class="mt-1 w-5 h-5 text-blue-600 rounded" onchange="saveWorkOfMercy('counsel-doubtful')">
+                                <div>
+                                    <span class="font-semibold text-gray-800 block">Counsel the Doubtful</span>
+                                    <span class="text-sm text-gray-600">Provide spiritual guidance</span>
+                                </div>
+                            </label>
+                            <textarea placeholder="Details (optional)" rows="2" 
+                                      class="w-full mt-2 px-3 py-2 border border-blue-300 rounded-md text-sm"
+                                      onchange="saveWorkOfMercyNotes('counsel-doubtful', this.value)"></textarea>
+                        </div>
+
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <label class="flex items-start space-x-3">
+                                <input type="checkbox" class="mt-1 w-5 h-5 text-blue-600 rounded" onchange="saveWorkOfMercy('admonish-sinners')">
+                                <div>
+                                    <span class="font-semibold text-gray-800 block">Admonish Sinners</span>
+                                    <span class="text-sm text-gray-600">Fraternal correction with charity</span>
+                                </div>
+                            </label>
+                            <textarea placeholder="Details (optional)" rows="2" 
+                                      class="w-full mt-2 px-3 py-2 border border-blue-300 rounded-md text-sm"
+                                      onchange="saveWorkOfMercyNotes('admonish-sinners', this.value)"></textarea>
+                        </div>
+
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <label class="flex items-start space-x-3">
+                                <input type="checkbox" class="mt-1 w-5 h-5 text-blue-600 rounded" onchange="saveWorkOfMercy('bear-wrongs')">
+                                <div>
+                                    <span class="font-semibold text-gray-800 block">Bear Wrongs Patiently</span>
+                                    <span class="text-sm text-gray-600">Endure injuries without resentment</span>
+                                </div>
+                            </label>
+                            <textarea placeholder="Details (optional)" rows="2" 
+                                      class="w-full mt-2 px-3 py-2 border border-blue-300 rounded-md text-sm"
+                                      onchange="saveWorkOfMercyNotes('bear-wrongs', this.value)"></textarea>
+                        </div>
+
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <label class="flex items-start space-x-3">
+                                <input type="checkbox" class="mt-1 w-5 h-5 text-blue-600 rounded" onchange="saveWorkOfMercy('forgive-offenses')">
+                                <div>
+                                    <span class="font-semibold text-gray-800 block">Forgive Offenses Willingly</span>
+                                    <span class="text-sm text-gray-600">Practice mercy and forgiveness</span>
+                                </div>
+                            </label>
+                            <textarea placeholder="Details (optional)" rows="2" 
+                                      class="w-full mt-2 px-3 py-2 border border-blue-300 rounded-md text-sm"
+                                      onchange="saveWorkOfMercyNotes('forgive-offenses', this.value)"></textarea>
+                        </div>
+
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <label class="flex items-start space-x-3">
+                                <input type="checkbox" class="mt-1 w-5 h-5 text-blue-600 rounded" onchange="saveWorkOfMercy('comfort-afflicted')">
+                                <div>
+                                    <span class="font-semibold text-gray-800 block">Comfort the Afflicted</span>
+                                    <span class="text-sm text-gray-600">Console those who suffer</span>
+                                </div>
+                            </label>
+                            <textarea placeholder="Details (optional)" rows="2" 
+                                      class="w-full mt-2 px-3 py-2 border border-blue-300 rounded-md text-sm"
+                                      onchange="saveWorkOfMercyNotes('comfort-afflicted', this.value)"></textarea>
+                        </div>
+
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <label class="flex items-start space-x-3">
+                                <input type="checkbox" class="mt-1 w-5 h-5 text-blue-600 rounded" onchange="saveWorkOfMercy('pray-living-dead')">
+                                <div>
+                                    <span class="font-semibold text-gray-800 block">Pray for the Living and Dead</span>
+                                    <span class="text-sm text-gray-600">Intercede for others and holy souls</span>
+                                </div>
+                            </label>
+                            <textarea placeholder="Details (optional)" rows="2" 
+                                      class="w-full mt-2 px-3 py-2 border border-blue-300 rounded-md text-sm"
+                                      onchange="saveWorkOfMercyNotes('pray-living-dead', this.value)"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History/Calendar Tab -->
+            <div id="history-tab" class="tab-content p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Spiritual Journey History</h2>
+                
+                <div class="mb-6 flex flex-wrap gap-4">
+                    <button onclick="changeHistoryView('week')" id="view-week" class="px-4 py-2 bg-indigo-600 text-white rounded-md font-semibold">
+                        Last 7 Days
+                    </button>
+                    <button onclick="changeHistoryView('month')" id="view-month" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold hover:bg-gray-300">
+                        Last 30 Days
+                    </button>
+                    <button onclick="changeHistoryView('all')" id="view-all" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold hover:bg-gray-300">
+                        All Time
+                    </button>
+                </div>
+                
+                <div id="history-calendar" class="space-y-4">
+                    <!-- Will be populated dynamically -->
+                </div>
+                
+                <div id="no-history" style="display: none;" class="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+                    <p class="text-gray-600">No activity recorded yet. Start tracking your spiritual journey today!</p>
+                </div>
+            </div>
+
+            <!-- Progress Tab -->
+            <div id="progress-tab" class="tab-content p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Your Spiritual Journey</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-purple-100 to-purple-200 p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold text-purple-900 mb-2">Total Days Tracked</h3>
+                        <p class="text-4xl font-bold text-purple-700" id="total-days">0</p>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-blue-100 to-blue-200 p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold text-blue-900 mb-2">Sacrament of Reconciliation</h3>
+                        <p class="text-4xl font-bold text-blue-700" id="total-confessions">0</p>
+                        <p class="text-sm text-blue-800 mt-1">confessions</p>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-green-100 to-green-200 p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold text-green-900 mb-2">Works of Mercy</h3>
+                        <p class="text-4xl font-bold text-green-700" id="total-mercy-works">0</p>
+                        <p class="text-sm text-green-800 mt-1">performed</p>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Last 30 Days Activity</h3>
+                    <div id="activity-summary" class="space-y-3">
+                        <!-- Will be populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-200 rounded-lg p-6">
+                    <h3 class="text-xl font-semibold text-amber-900 mb-3">🌟 Remember</h3>
+                    <p class="text-gray-700 italic">
+                        "The saints are not the people who never sin, but the people who keep getting up after they fall."
+                    </p>
+                    <p class="text-gray-600 mt-3">
+                        This tracker is a tool for your spiritual journey. Progress may be slow, but perseverance in prayer, 
+                        the sacraments, and works of charity will lead you closer to God. Trust in His mercy and never give up!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize
+        let currentDate = new Date().toISOString().split('T')[0];
+        document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-US', { 
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+        });
+
+        // Daily Readings
+        async function loadDailyReadings() {
+            const readingsDate = document.getElementById('readings-date');
+            const readingsLoading = document.getElementById('readings-loading');
+            const readingsError = document.getElementById('readings-error');
+            const readingsContent = document.getElementById('readings-content');
+            
+            readingsDate.textContent = new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
+            
+            try {
+                // Format date for USCCB API (MMDDYY format)
+                const today = new Date();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                const year = String(today.getFullYear()).slice(-2);
+                const dateStr = `${month}${day}${year}`;
+                
+                // Try to fetch from USCCB
+                const response = await fetch(`https://bible.usccb.org/bible/readings/${dateStr}.cfm`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch readings');
+                }
+                
+                const html = await response.text();
+                
+                // Parse the HTML to extract readings
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Extract reading sections
+                const readingSections = doc.querySelectorAll('.content-body');
+                
+                let readingsHTML = '';
+                
+                // Try to find the readings in the parsed HTML
+                const contentBody = doc.querySelector('.content-body');
+                if (contentBody) {
+                    readingsHTML = `
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <p class="text-sm text-gray-500 mb-4">
+                                Visit <a href="https://bible.usccb.org/daily-bible-reading" target="_blank" class="text-indigo-600 underline">USCCB Daily Readings</a> for the full text
+                            </p>
+                            <div class="prose max-w-none">
+                                ${contentBody.innerHTML}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Fallback if parsing fails
+                    readingsHTML = `
+                        <div class="bg-amber-50 border border-amber-200 rounded-lg p-6">
+                            <h3 class="font-semibold text-amber-900 mb-3">Today's Mass Readings</h3>
+                            <p class="text-gray-700 mb-4">
+                                Visit the USCCB website for today's complete Mass readings:
+                            </p>
+                            <a href="https://bible.usccb.org/daily-bible-reading" 
+                               target="_blank"
+                               class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-md hover:bg-indigo-700 transition font-semibold">
+                                View Today's Readings →
+                            </a>
+                        </div>
+                    `;
+                }
+                
+                readingsLoading.style.display = 'none';
+                readingsContent.innerHTML = readingsHTML;
+                readingsContent.style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error loading readings:', error);
+                readingsLoading.style.display = 'none';
+                readingsError.style.display = 'block';
+            }
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-gray-700', 'border-indigo-600');
+                btn.classList.add('text-gray-500', 'border-transparent');
+            });
+            
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.remove('text-gray-500', 'border-transparent');
+            event.target.classList.add('text-gray-700', 'border-indigo-600');
+            
+            if (tabName === 'progress') {
+                updateProgressStats();
+            } else if (tabName === 'readings') {
+                loadDailyReadings();
+            } else if (tabName === 'history') {
+                loadHistory('week');
+            }
+        }
+
+        // Daily Activities
+        async function saveDailyActivity(activity) {
+            try {
+                const key = `daily:${currentDate}`;
+                let dailyData = {};
+                
+                try {
+                    const result = await window.storage.get(key);
+                    if (result && result.value) {
+                        dailyData = JSON.parse(result.value);
+                    }
+                } catch (e) {
+                    // Key doesn't exist yet
+                }
+                
+                const checkbox = event.target;
+                dailyData[activity] = checkbox.checked;
+                
+                await window.storage.set(key, JSON.stringify(dailyData));
+            } catch (error) {
+                console.error('Error saving daily activity:', error);
+            }
+        }
+
+        async function saveDailyActivityMinutes(activity, minutes) {
+            try {
+                const key = `daily:${currentDate}`;
+                let dailyData = {};
+                
+                try {
+                    const result = await window.storage.get(key);
+                    if (result && result.value) {
+                        dailyData = JSON.parse(result.value);
+                    }
+                } catch (e) {
+                    // Key doesn't exist yet
+                }
+                
+                dailyData[activity + '_minutes'] = parseInt(minutes) || 0;
+                
+                await window.storage.set(key, JSON.stringify(dailyData));
+            } catch (error) {
+                console.error('Error saving activity minutes:', error);
+            }
+        }
+
+        async function saveDailyNotes() {
+            try {
+                const key = `daily:${currentDate}`;
+                let dailyData = {};
+                
+                try {
+                    const result = await window.storage.get(key);
+                    if (result && result.value) {
+                        dailyData = JSON.parse(result.value);
+                    }
+                } catch (e) {
+                    // Key doesn't exist yet
+                }
+                
+                dailyData.notes = document.getElementById('daily-notes').value;
+                
+                await window.storage.set(key, JSON.stringify(dailyData));
+            } catch (error) {
+                console.error('Error saving daily notes:', error);
+            }
+        }
+
+        // Confession Functions
+        async function loadLastConfession() {
+            try {
+                const result = await window.storage.list('confession:');
+                if (result && result.keys && result.keys.length > 0) {
+                    const sortedKeys = result.keys.sort().reverse();
+                    const lastKey = sortedKeys[0];
+                    const confessionData = await window.storage.get(lastKey);
+                    if (confessionData && confessionData.value) {
+                        const data = JSON.parse(confessionData.value);
+                        document.getElementById('last-confession-date').textContent = 
+                            new Date(data.date).toLocaleDateString('en-US', { 
+                                year: 'numeric', month: 'long', day: 'numeric' 
+                            });
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading last confession:', error);
+            }
+            
+            await loadConfessionHistory();
+        }
+
+        function recordNewConfession() {
+            document.getElementById('confession-form').style.display = 'block';
+            // Clear previous selections
+            document.querySelectorAll('#confession-form input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.getElementById('confession-notes').value = '';
+        }
+
+        function cancelConfession() {
+            document.getElementById('confession-form').style.display = 'none';
+        }
+
+        async function saveConfession() {
+            try {
+                const sins = [];
+                document.querySelectorAll('#confession-form input[type="checkbox"]:checked').forEach(checkbox => {
+                    sins.push(checkbox.dataset.sin);
+                });
+                
+                const confessionData = {
+                    date: new Date().toISOString(),
+                    sins: sins,
+                    notes: document.getElementById('confession-notes').value
+                };
+                
+                const key = `confession:${Date.now()}`;
+                await window.storage.set(key, JSON.stringify(confessionData));
+                
+                alert('Confession record saved. Remember to actually go to confession!');
+                cancelConfession();
+                await loadLastConfession();
+            } catch (error) {
+                console.error('Error saving confession:', error);
+                alert('Error saving confession record');
+            }
+        }
+
+        async function loadConfessionHistory() {
+            try {
+                const result = await window.storage.list('confession:');
+                const historyDiv = document.getElementById('confession-list');
+                
+                if (!result || !result.keys || result.keys.length === 0) {
+                    historyDiv.innerHTML = '<p class="text-gray-500">No confessions recorded yet.</p>';
+                    return;
+                }
+                
+                const sortedKeys = result.keys.sort().reverse();
+                let html = '';
+                
+                for (const key of sortedKeys.slice(0, 10)) {
+                    const confessionData = await window.storage.get(key);
+                    if (confessionData && confessionData.value) {
+                        const data = JSON.parse(confessionData.value);
+                        const dateStr = new Date(data.date).toLocaleDateString('en-US', { 
+                            year: 'numeric', month: 'long', day: 'numeric' 
+                        });
+                        html += `
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                <p class="font-semibold text-gray-800">${dateStr}</p>
+                                <p class="text-sm text-gray-600 mt-1">${data.sins.length} matter(s) examined</p>
+                                ${data.notes ? `<p class="text-sm text-gray-600 mt-2 italic">${data.notes}</p>` : ''}
+                            </div>
+                        `;
+                    }
+                }
+                
+                historyDiv.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading confession history:', error);
+            }
+        }
+
+        // Works of Mercy
+        async function saveWorkOfMercy(work) {
+            try {
+                const key = `mercy:${currentDate}`;
+                let mercyData = {};
+                
+                try {
+                    const result = await window.storage.get(key);
+                    if (result && result.value) {
+                        mercyData = JSON.parse(result.value);
+                    }
+                } catch (e) {
+                    // Key doesn't exist yet
+                }
+                
+                const checkbox = event.target;
+                mercyData[work] = checkbox.checked;
+                
+                await window.storage.set(key, JSON.stringify(mercyData));
+            } catch (error) {
+                console.error('Error saving work of mercy:', error);
+            }
+        }
+
+        async function saveWorkOfMercyNotes(work, notes) {
+            try {
+                const key = `mercy:${currentDate}`;
+                let mercyData = {};
+                
+                try {
+                    const result = await window.storage.get(key);
+                    if (result && result.value) {
+                        mercyData = JSON.parse(result.value);
+                    }
+                } catch (e) {
+                    // Key doesn't exist yet
+                }
+                
+                mercyData[work + '_notes'] = notes;
+                
+                await window.storage.set(key, JSON.stringify(mercyData));
+            } catch (error) {
+                console.error('Error saving work of mercy notes:', error);
+            }
+        }
+
+        // History/Calendar Functions
+        let currentHistoryView = 'week';
+        
+        function changeHistoryView(view) {
+            currentHistoryView = view;
+            
+            // Update button styles
+            document.querySelectorAll('[id^="view-"]').forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            document.getElementById('view-' + view).classList.remove('bg-gray-200', 'text-gray-700');
+            document.getElementById('view-' + view).classList.add('bg-indigo-600', 'text-white');
+            
+            loadHistory(view);
+        }
+        
+        async function loadHistory(view) {
+            try {
+                const historyCalendar = document.getElementById('history-calendar');
+                const noHistory = document.getElementById('no-history');
+                
+                // Get all daily activity keys
+                const dailyResult = await window.storage.list('daily:');
+                const mercyResult = await window.storage.list('mercy:');
+                
+                if ((!dailyResult || !dailyResult.keys || dailyResult.keys.length === 0) && 
+                    (!mercyResult || !mercyResult.keys || mercyResult.keys.length === 0)) {
+                    historyCalendar.style.display = 'none';
+                    noHistory.style.display = 'block';
+                    return;
+                }
+                
+                historyCalendar.style.display = 'block';
+                noHistory.style.display = 'none';
+                
+                // Combine all dates
+                const allDates = new Set();
+                if (dailyResult && dailyResult.keys) {
+                    dailyResult.keys.forEach(key => {
+                        const date = key.replace('daily:', '');
+                        allDates.add(date);
+                    });
+                }
+                if (mercyResult && mercyResult.keys) {
+                    mercyResult.keys.forEach(key => {
+                        const date = key.replace('mercy:', '');
+                        allDates.add(date);
+                    });
+                }
+                
+                // Filter dates based on view
+                const today = new Date();
+                const filteredDates = Array.from(allDates).filter(dateStr => {
+                    const date = new Date(dateStr);
+                    const diffTime = today - date;
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    if (view === 'week') return diffDays <= 7;
+                    if (view === 'month') return diffDays <= 30;
+                    return true; // 'all'
+                }).sort().reverse();
+                
+                if (filteredDates.length === 0) {
+                    historyCalendar.innerHTML = '<p class="text-gray-500 text-center py-8">No activity in this time period</p>';
+                    return;
+                }
+                
+                // Build history HTML
+                let html = '';
+                
+                for (const dateStr of filteredDates) {
+                    const date = new Date(dateStr);
+                    const formattedDate = date.toLocaleDateString('en-US', { 
+                        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+                    });
+                    
+                    // Get daily activities
+                    let dailyActivities = [];
+                    try {
+                        const dailyData = await window.storage.get(`daily:${dateStr}`);
+                        if (dailyData && dailyData.value) {
+                            const data = JSON.parse(dailyData.value);
+                            const activityLabels = {
+                                'rosary': '🌹 Rosary',
+                                'mass': '⛪ Mass',
+                                'bible': '📖 Bible Reading',
+                                'adoration': '🕯️ Adoration',
+                                'divine-office': '📿 Divine Office',
+                                'divine-mercy': '🙏 Divine Mercy',
+                                'spiritual-reading': '📚 Spiritual Reading',
+                                'meditation': '🧘 Meditation',
+                                'fasting': '🍞 Fasting',
+                                'examination': '🔍 Examination'
+                            };
+                            
+                            for (const [key, label] of Object.entries(activityLabels)) {
+                                if (data[key]) {
+                                    let activity = label;
+                                    if (data[key + '_minutes']) {
+                                        activity += ` (${data[key + '_minutes']} min)`;
+                                    }
+                                    dailyActivities.push(activity);
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        // No daily data for this date
+                    }
+                    
+                    // Get works of mercy
+                    let mercyWorks = [];
+                    try {
+                        const mercyData = await window.storage.get(`mercy:${dateStr}`);
+                        if (mercyData && mercyData.value) {
+                            const data = JSON.parse(mercyData.value);
+                            const mercyLabels = {
+                                'feed-hungry': 'Feed the Hungry',
+                                'give-drink': 'Give Drink',
+                                'clothe-naked': 'Clothe the Naked',
+                                'shelter-homeless': 'Shelter Homeless',
+                                'visit-sick': 'Visit the Sick',
+                                'visit-imprisoned': 'Visit Imprisoned',
+                                'bury-dead': 'Bury the Dead',
+                                'instruct-ignorant': 'Instruct the Ignorant',
+                                'counsel-doubtful': 'Counsel the Doubtful',
+                                'admonish-sinners': 'Admonish Sinners',
+                                'bear-wrongs': 'Bear Wrongs Patiently',
+                                'forgive-offenses': 'Forgive Offenses',
+                                'comfort-afflicted': 'Comfort the Afflicted',
+                                'pray-living-dead': 'Pray for Living & Dead'
+                            };
+                            
+                            for (const [key, label] of Object.entries(mercyLabels)) {
+                                if (data[key]) {
+                                    mercyWorks.push(label);
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        // No mercy data for this date
+                    }
+                    
+                    // Build day card
+                    html += `
+                        <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                            <h3 class="text-lg font-bold text-gray-800 mb-3">${formattedDate}</h3>
+                            
+                            ${dailyActivities.length > 0 ? `
+                                <div class="mb-4">
+                                    <h4 class="text-sm font-semibold text-indigo-700 mb-2">Daily Activities:</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        ${dailyActivities.map(act => `
+                                            <span class="inline-block bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-sm">
+                                                ${act}
+                                            </span>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            ${mercyWorks.length > 0 ? `
+                                <div>
+                                    <h4 class="text-sm font-semibold text-orange-700 mb-2">Works of Mercy:</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        ${mercyWorks.map(work => `
+                                            <span class="inline-block bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm">
+                                                ${work}
+                                            </span>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            ${dailyActivities.length === 0 && mercyWorks.length === 0 ? `
+                                <p class="text-gray-400 text-sm italic">No activities recorded</p>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+                
+                historyCalendar.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error loading history:', error);
+                document.getElementById('history-calendar').innerHTML = 
+                    '<p class="text-red-600">Error loading history. Please try again.</p>';
+            }
+        }
+
+        // Progress Stats
+        async function updateProgressStats() {
+            try {
+                // Count unique days
+                const dailyResult = await window.storage.list('daily:');
+                const totalDays = dailyResult && dailyResult.keys ? dailyResult.keys.length : 0;
+                document.getElementById('total-days').textContent = totalDays;
+                
+                // Count confessions
+                const confessionResult = await window.storage.list('confession:');
+                const totalConfessions = confessionResult && confessionResult.keys ? confessionResult.keys.length : 0;
+                document.getElementById('total-confessions').textContent = totalConfessions;
+                
+                // Count works of mercy
+                let totalMercyWorks = 0;
+                const mercyResult = await window.storage.list('mercy:');
+                if (mercyResult && mercyResult.keys) {
+                    for (const key of mercyResult.keys) {
+                        const data = await window.storage.get(key);
+                        if (data && data.value) {
+                            const mercyData = JSON.parse(data.value);
+                            totalMercyWorks += Object.keys(mercyData).filter(k => !k.endsWith('_notes') && mercyData[k]).length;
+                        }
+                    }
+                }
+                document.getElementById('total-mercy-works').textContent = totalMercyWorks;
+                
+                // Activity summary
+                await loadActivitySummary();
+            } catch (error) {
+                console.error('Error updating progress stats:', error);
+            }
+        }
+
+        async function loadActivitySummary() {
+            try {
+                const summaryDiv = document.getElementById('activity-summary');
+                const activities = {
+                    'rosary': 'Holy Rosary',
+                    'mass': 'Holy Mass',
+                    'bible': 'Bible Reading',
+                    'adoration': 'Eucharistic Adoration',
+                    'divine-office': 'Divine Office'
+                };
+                
+                let html = '';
+                for (const [key, label] of Object.entries(activities)) {
+                    let count = 0;
+                    const dailyResult = await window.storage.list('daily:');
+                    
+                    if (dailyResult && dailyResult.keys) {
+                        for (const dayKey of dailyResult.keys) {
+                            const data = await window.storage.get(dayKey);
+                            if (data && data.value) {
+                                const dailyData = JSON.parse(data.value);
+                                if (dailyData[key]) count++;
+                            }
+                        }
+                    }
+                    
+                    html += `
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                            <span class="text-gray-700">${label}</span>
+                            <span class="font-bold text-indigo-600">${count} days</span>
+                        </div>
+                    `;
+                }
+                
+                summaryDiv.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading activity summary:', error);
+            }
+        }
+
+        // Load data on page load
+        async function loadTodayData() {
+            try {
+                const key = `daily:${currentDate}`;
+                const result = await window.storage.get(key);
+                
+                if (result && result.value) {
+                    const dailyData = JSON.parse(result.value);
+                    
+                    // Restore checkboxes
+                    document.querySelectorAll('#daily-tab input[type="checkbox"]').forEach(checkbox => {
+                        const activity = checkbox.getAttribute('onchange').match(/'([^']+)'/)[1];
+                        if (dailyData[activity]) {
+                            checkbox.checked = true;
+                        }
+                    });
+                    
+                    // Restore minutes
+                    const minuteInputs = document.querySelectorAll('#daily-tab input[type="number"]');
+                    minuteInputs.forEach(input => {
+                        const onchangeAttr = input.getAttribute('onchange');
+                        if (onchangeAttr) {
+                            const match = onchangeAttr.match(/'([^']+)'/);
+                            if (match) {
+                                const activity = match[1];
+                                if (dailyData[activity + '_minutes']) {
+                                    input.value = dailyData[activity + '_minutes'];
+                                }
+                            }
+                        }
+                    });
+                    
+                    // Restore notes
+                    if (dailyData.notes) {
+                        document.getElementById('daily-notes').value = dailyData.notes;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading today data:', error);
+            }
+        }
+
+        async function loadTodayMercy() {
+            try {
+                const key = `mercy:${currentDate}`;
+                const result = await window.storage.get(key);
+                
+                if (result && result.value) {
+                    const mercyData = JSON.parse(result.value);
+                    
+                    document.querySelectorAll('#mercy-tab input[type="checkbox"]').forEach(checkbox => {
+                        const onchangeAttr = checkbox.getAttribute('onchange');
+                        if (onchangeAttr) {
+                            const match = onchangeAttr.match(/'([^']+)'/);
+                            if (match) {
+                                const work = match[1];
+                                if (mercyData[work]) {
+                                    checkbox.checked = true;
+                                }
+                            }
+                        }
+                    });
+                    
+                    document.querySelectorAll('#mercy-tab textarea').forEach(textarea => {
+                        const onchangeAttr = textarea.getAttribute('onchange');
+                        if (onchangeAttr) {
+                            const match = onchangeAttr.match(/'([^']+)'/);
+                            if (match) {
+                                const work = match[1];
+                                if (mercyData[work + '_notes']) {
+                                    textarea.value = mercyData[work + '_notes'];
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading today mercy data:', error);
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('load', async () => {
+            await loadTodayData();
+            await loadTodayMercy();
+            await loadLastConfession();
+            
+            // Register service worker for PWA
+            if ('serviceWorker' in navigator) {
+                try {
+                    await navigator.serviceWorker.register('sw.js');
+                } catch (error) {
+                    console.log('Service worker registration failed:', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
